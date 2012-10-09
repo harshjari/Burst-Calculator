@@ -1,7 +1,12 @@
 var fs = require('fs');
 
 var resultList = [];
+var count = 0;
+var input = fs.createReadStream('datafile.txt');
 
+readLines(input, parseLinesToObjects);
+
+//Reads File line by line and sends to parseLinesToObjects function
 function readLines(input, func) {
   var remaining = '';
 
@@ -26,9 +31,8 @@ function readLines(input, func) {
   });
 }
 
-var count = 0;
-
-function outputLines(remaining) {
+//converts the lines to Json Objects and sends to findLargestSumVariant to calculate burst
+function parseLinesToObjects(remaining) {
   var index = remaining.indexOf('|');
   var index2 = (remaining.substring(index+1, remaining.length)).indexOf('|') + index + 2;
   var company = [];
@@ -46,10 +50,11 @@ function outputLines(remaining) {
     iterator++;
   });
   count++;
-  findLargestContSum(company);
+  findLargestSumVariant(company);
 }
 
-function findLargestContSum(company) {
+//Calculates burst and when it has done so for 28 companies, it outputs it to terminal
+function findLargestSumVariant(company) {
   var maxSum = company.increments[0];
   var currentSum = maxSum;
   var start = 0;
@@ -97,7 +102,9 @@ function findLargestContSum(company) {
       while(x.startMonth.length<5) {
         x.startMonth = x.startMonth + " ";
       }
-      console.log( x.symbol + "    " +  x.maxBurst.toPrecision(7)  + "        " +  x.timePeriod  + "        "  + x.startMonth + "        " +  x.endMonth  + "        " +  x.changeInPrice );
+      console.log( x.symbol + "    " +  x.maxBurst.toPrecision(7)  
+          + "        " +  x.timePeriod  + "        "  + x.startMonth + "        " 
+          +  x.endMonth  + "        " +  x.changeInPrice );
     });
   }
 }
@@ -105,8 +112,5 @@ function findLargestContSum(company) {
 function sortByBurst(a, b) {
   return b.maxBurst-a.maxBurst;
 }
-
-var input = fs.createReadStream('datafile.txt');
-readLines(input, outputLines);
 
 
